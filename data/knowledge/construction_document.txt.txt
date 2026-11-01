@@ -1,0 +1,45 @@
+CONSTRUCTION OPERATIONS KNOWLEDGE BASE
+
+Equipment Management
+
+Construction companies must maintain accurate
+records of equipment deployed across project sites.
+
+Every asset should have:
+- Unique asset identification
+- Current location
+- Assigned project
+- Responsible operator
+- Maintenance history
+- Inspection status
+
+Preventive Maintenance
+
+Equipment should undergo scheduled preventive
+maintenance based on operating hours and manufacturer
+recommendations.
+
+Overdue maintenance should generate an alert
+for the responsible site manager.
+
+Project Management
+
+Project managers should monitor:
+- Project schedule
+- Equipment utilisation
+- Workforce availability
+- Material availability
+- Safety incidents
+
+Equipment Utilisation
+
+Low equipment utilisation can indicate poor
+resource allocation.
+
+Equipment utilisation should be evaluated using
+operating hours divided by available working hours.
+
+Safety
+
+Equipment with expired safety inspections must
+not be assigned to active construction operations.
