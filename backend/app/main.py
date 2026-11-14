@@ -36,6 +36,7 @@ async def health():
     return {
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        "model": settings.OPENAI_MODEL,
     }
 
 @app.post("/chat")

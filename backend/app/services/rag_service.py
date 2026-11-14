@@ -8,7 +8,12 @@ from app.core.config import settings
 
 class RAGService:
     def __init__(self):
-        self.openai = OpenAI(api_key=settings.OPENAI_API_KEY) if settings.OPENAI_API_KEY else None
+        self.openai = None
+        if settings.OPENAI_API_KEY:
+            self.openai = OpenAI(
+                api_key=settings.OPENAI_API_KEY,
+                base_url="http://localhost:12434/engines/v1",
+            )
         self.chroma = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
         self.collection = self.chroma.get_or_create_collection(
             name="enterprise_knowledge",
@@ -21,6 +26,9 @@ class RAGService:
         chunk_size: int = 800,
         overlap: int = 150,
     ) -> list[str]:
+        if not text:
+            return []
+
         words = text.split()
         chunks = []
         start = 0
@@ -34,6 +42,8 @@ class RAGService:
         return chunks
 
     def create_embeddings(self, texts: list[str]) -> list[list[float]]:
+        if not texts:
+            return []
         if self.openai is None:
             raise RuntimeError("OPENAI_API_KEY is not configured.")
 
@@ -64,19 +74,31 @@ class RAGService:
         return len(chunks)
 
     def search(self, question: str, top_k: int = 3) -> list[dict]:
+        if top_k <= 0:
+            return []
+
         query_embedding = self.create_embeddings([question])[0]
         results = self.collection.query(
             query_embeddings=[query_embedding],
             n_results=top_k,
         )
 
+        documents = results.get("documents") or []
+        if not documents:
+            return []
+
+        metadatas = results.get("metadatas") or []
+        distances = results.get("distances") or []
+
         retrieved = []
-        for i, document in enumerate(results["documents"][0]):
+        for i, document in enumerate(documents[0]):
+            metadata = (metadatas[0][i] if len(metadatas) > 0 and i < len(metadatas[0]) else {})
+            distance = distances[0][i] if len(distances) > 0 and i < len(distances[0]) else None
             retrieved.append(
                 {
                     "content": document,
-                    "source": results["metadatas"][0][i]["source"],
-                    "distance": results["distances"][0][i],
+                    "source": metadata.get("source", "unknown"),
+                    "distance": distance,
                 }
             )
 
